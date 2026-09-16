@@ -4,9 +4,10 @@ import {
   AcademicsTable,
   type AcademicTableUrlState,
 } from "@/components/AcademicsTable";
+import { AcademicYearTable } from "@/components/AcademicYearTable";
 import { AcademicsTermTable } from "@/components/AcademicsTermTable";
 import { SubjectTable } from "@/components/SubjectTable";
-import { academicTerms, classes, subjects } from "@/constants";
+import { academicTerms, academicYears, classes, subjects } from "@/constants";
 import Heading from "@/components/Heading";
 import Button from "@/components/Button";
 import { Plus } from "lucide-react";
@@ -70,40 +71,54 @@ export default async function AcademicsPage({
     sorting: [] as SortingState,
   };
 
+  const academicYearInitialUrlState = {
+    pageIndex: 0,
+    pageSize: 5,
+    query: "",
+    sorting: [] as SortingState,
+  };
+
   return (
     <div className="space-y-8">
       <AcademicsTable initialData={classes} initialUrlState={initialUrlState} />
       <div className="flex flex-col gap-4 md:flex-row md:gap-6">
         <div className="flex flex-col gap-2">
-            <Heading
-                title="Subject"
-                subtitle=""
-            >
-            <Button variant="primary" size="sm" href="/subject">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Subject
+          <Heading title="Subject" subtitle="">
+            <Button variant="primary" size="sm" href="academics/subject">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Subject
             </Button>
-            </Heading>
-            <SubjectTable
+          </Heading>
+          <SubjectTable
             initialData={subjects}
             initialUrlState={subjectInitialUrlState}
-            />
+          />
         </div>
         <div className="flex flex-col gap-2">
-           <Heading
-              title="Academic Term"
-              subtitle=""
-            >
-            <Button variant="primary" size="sm" href="/academic_year">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Term
+          <Heading title="Academic Term" subtitle="">
+            <Button variant="primary" size="sm" href="academics/academic_term">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Term
             </Button>
-            </Heading>
-            <AcademicsTermTable
-              initialData={academicTerms}
-              initialUrlState={termInitialUrlState}
-            />
+          </Heading>
+          <AcademicsTermTable
+            initialData={academicTerms}
+            initialUrlState={termInitialUrlState}
+          />
         </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Heading title="Academic Year" subtitle="">
+          <Button variant="primary" size="sm" href="academics/academic_year">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Academic Year
+          </Button>
+        </Heading>
+        <AcademicYearTable
+          initialData={academicYears}
+          initialUrlState={academicYearInitialUrlState}
+        />
       </div>
     </div>
   );

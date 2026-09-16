@@ -23,6 +23,7 @@ export { academics, type Academic } from "./academics";
 export { classes, type AcademicClass } from "./class";
 export { subjects, type Subject } from "./subject";
 export { academicTerms, type AcademicTerm } from "./academicTerm";
+export { academicYears, type AcademicYear } from "./academic_year";
 
 export const dashboardStats: StatItem[] = [
   {
