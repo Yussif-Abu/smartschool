@@ -9,12 +9,13 @@ const SubjectPage = () => {
     <section className="w-full">
       <form
         className="card w-full overflow-hidden p-6"
-        onSubmit={() =>
-        capturePostHogEvent("teacher_creation_submitted", {
+        onSubmit={(event) => {
+        event.preventDefault();
+        capturePostHogEvent("subject_creation_submitted", {
         entity_type: "subject",
         form_type: "create",
-        })
-        }
+        });
+        }}
       >
         <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
           <Heading
@@ -23,21 +24,33 @@ const SubjectPage = () => {
           />
         </div>
         <div className="flex flex-col gap-4 md:flex-row md:gap-6">
-          <TextField 
-            label="Class" 
-            name="name"
-            placeholder="Enter Class Name" 
+          <TextField
+            label="Subject Name"
+            name="subject"
+            placeholder="Enter Subject Name"
             required
           />
-          <TextField 
-            label="Grade" 
-            name="grade"
-            placeholder="Enter Grade Name" 
+          <TextField
+            label="Subject Code"
+            name="code"
+            placeholder="Enter Subject Code"
             required
           />
-          <Select 
-            label="Subject Type" 
-            name="type" 
+          <Select
+            label="Department"
+            name="department"
+            placeholder="Select Department"
+            options={[
+              {value:"STEM", label:"STEM"},
+              {value:"Science", label:"Science"},
+              {value:"Humanities", label:"Humanities"},
+              {value:"Social Studies", label:"Social Studies"},
+              {value:"Commerce", label:"Commerce"},
+              {value:"Creative Arts", label:"Creative Arts"}
+            ]}/>
+          <Select
+            label="Subject Type"
+            name="type"
             placeholder="Select Subject Type"
             options={[
               {value:"Core", label:"Core Subject"},

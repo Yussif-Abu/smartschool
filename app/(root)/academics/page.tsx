@@ -84,7 +84,7 @@ export default async function AcademicsPage({
       <div className="flex flex-col gap-4 md:flex-row md:gap-6">
         <div className="flex flex-col gap-2">
           <Heading title="Subject" subtitle="">
-            <Button variant="primary" size="sm" href="academics/subject">
+            <Button variant="primary" size="sm" href="/academics/subject">
               <Plus className="mr-2 h-4 w-4" />
               Add Subject
             </Button>
@@ -96,7 +96,7 @@ export default async function AcademicsPage({
         </div>
         <div className="flex flex-col gap-2">
           <Heading title="Academic Term" subtitle="">
-            <Button variant="primary" size="sm" href="academics/academic_term">
+            <Button variant="primary" size="sm" href="/academics/academic_term">
               <Plus className="mr-2 h-4 w-4" />
               Add Term
             </Button>
@@ -110,7 +110,7 @@ export default async function AcademicsPage({
 
       <div className="flex flex-col gap-2">
         <Heading title="Academic Year" subtitle="">
-          <Button variant="primary" size="sm" href="academics/academic_year">
+          <Button variant="primary" size="sm" href="/academics/academic_year">
             <Plus className="mr-2 h-4 w-4" />
             Add Academic Year
           </Button>

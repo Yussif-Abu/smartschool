@@ -9,12 +9,13 @@ const AcademicTerm = () => {
     <section className="w-full">
       <form
         className="card w-full overflow-hidden p-6"
-        onSubmit={() =>
-        capturePostHogEvent("teacher_creation_submitted", {
+        onSubmit={(event) => {
+        event.preventDefault();
+        capturePostHogEvent("academic_term_creation_submitted", {
         entity_type: "academic_term",
         form_type: "create",
-        })
-        }
+        });
+        }}
       >
         <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
           <Heading
@@ -53,7 +54,7 @@ const AcademicTerm = () => {
             Cancel
           </Button>
           <Button type="submit" variant="primary" size="md">
-            Save Student
+            Save
           </Button>
         </div>
       </form>
