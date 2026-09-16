@@ -7,57 +7,51 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { useCallback, useEffect, useState } from "react";
-import type { Teacher } from "@/constants/teachers";
+
+import type { Academic} from "@/constants/academics";
 import { capturePostHogEvent } from "@/helper/posthog";
 import { DataGrid, dataGridFeatures, type DataGridFilter } from "./DataGrid";
 
-export type TeachersTableUrlState = {
+export type AcademicTableUrlState = {
   pageIndex: number;
   pageSize: number;
   query: string;
   sorting: SortingState;
 };
 
-const columnHelper = createColumnHelper<typeof dataGridFeatures, Teacher>();
+const columnHelper = createColumnHelper<
+  typeof dataGridFeatures,
+  Academic
+>();
 
 const columns = columnHelper.columns([
-  columnHelper.accessor(
-    (teacher) => `${teacher.title} ${teacher.firstName} ${teacher.lastName}`,
-    {
-      id: "name",
-      header: "Teacher",
-      sortFn: "text",
-      cell: ({ getValue, row }) => (
-        <div>
-          <p className="data-grid-primary-value">{getValue()}</p>
-          <p className="data-grid-secondary-value">{row.original.email}</p>
-        </div>
-      ),
-    },
-  ),
-  columnHelper.accessor("teacherNumber", {
-    header: "Teacher Number",
+  columnHelper.accessor("id", {
+    header: "ID",
     sortFn: "alphanumeric",
   }),
-  columnHelper.accessor("department", { header: "Department", sortFn: "text" }),
-  columnHelper.accessor("employmentType", {
-    header: "Employment Type",
+  columnHelper.accessor("grade", {
+    header: "Grade",
+    sortFn: "alphanumeric",
+  }),
+  columnHelper.accessor("className", {
+    header: "Class Name",
     sortFn: "text",
   }),
-  columnHelper.accessor("campus", { header: "Campus", sortFn: "text" }),
-  columnHelper.accessor("status", {
-    header: "Status",
+  columnHelper.accessor("stream", {
+    header: "Stream",
     sortFn: "text",
-    cell: ({ getValue }) => {
-      const status = getValue();
-      const color =
-        status === "Active"
-          ? "status-badge-active"
-          : status === "Pending"
-            ? "status-badge-pending"
-            : "status-badge-inactive";
-      return <span className={`status-badge ${color}`}>{status}</span>;
-    },
+  }),
+  columnHelper.accessor("formTeacher", {
+    header: "Form Teacher",
+    sortFn: "text",
+  }),
+  columnHelper.accessor("campus", {
+    header: "Campus",
+    sortFn: "text",
+  }),
+  columnHelper.accessor("students", {
+    header: "Students",
+    sortFn: "alphanumeric",
   }),
 ]);
 
@@ -73,23 +67,16 @@ const filters: DataGridFilter[] = [
     ],
   },
   {
-    allLabel: "All statuses",
-    columnId: "status",
-    label: "Status",
+    allLabel: "All grades",
+    columnId: "grade",
+    label: "Grade",
     options: [
-      { label: "Active", value: "Active" },
-      { label: "Pending", value: "Pending" },
-      { label: "Inactive", value: "Inactive" },
-    ],
-  },
-  {
-    allLabel: "All departments",
-    columnId: "department",
-    label: "Department",
-    options: [
-      { label: "Mathematics", value: "Mathematics" },
-      { label: "Science", value: "Science" },
-      { label: "English", value: "English" },
+      { label: "Grade 7", value: "Grade 7" },
+      { label: "Grade 8", value: "Grade 8" },
+      { label: "Grade 9", value: "Grade 9" },
+      { label: "Grade 10", value: "Grade 10" },
+      { label: "Grade 11", value: "Grade 11" },
+      { label: "Grade 12", value: "Grade 12" },
     ],
   },
 ];
@@ -124,18 +111,16 @@ function syncTableUrl(
   );
 }
 
-type TeachersTableProps = {
-  initialData: Teacher[];
-  initialUrlState: TeachersTableUrlState;
+type AcademicsTableProps = {
+  initialData: Academic[];
+  initialUrlState: AcademicTableUrlState;
 };
 
-export function TeachersTable({
+export function AcademicsTable({
   initialData,
   initialUrlState,
-}: TeachersTableProps) {
+}: AcademicsTableProps) {
   const [rows, setRows] = useState(initialData);
-
-  // Routing owns only the state users should be able to share or refresh.
   const globalFilter = useCreateAtom<unknown>(initialUrlState.query);
   const sorting = useCreateAtom<SortingState>(initialUrlState.sorting);
   const pagination = useCreateAtom<PaginationState>({
@@ -151,20 +136,17 @@ export function TeachersTable({
     syncTableUrl(queryValue, sortingValue, paginationValue);
   }, [paginationValue, queryValue, sortingValue]);
 
-  const handleEdit = useCallback((teacher: Teacher) => {
-    window.alert(`Edit ${teacher.firstName} ${teacher.lastName}`);
+  const handleEdit = useCallback((academicClass: Academic) => {
+    window.alert(`Edit ${academicClass.className}`);
   }, []);
 
-  const handleDelete = useCallback((teacher: Teacher) => {
-    if (!window.confirm(`Delete ${teacher.firstName} ${teacher.lastName}?`))
-      return;
-    capturePostHogEvent("teacher_deleted", {
-      entity_type: "teacher",
+  const handleDelete = useCallback((academicClass: Academic) => {
+    if (!window.confirm(`Delete ${academicClass.className}?`)) return;
+    capturePostHogEvent("class_deleted", {
+      entity_type: "academic_class",
       source: "data_grid",
     });
-    setRows((current) =>
-      current.filter((row) => row.teacherNumber !== teacher.teacherNumber),
-    );
+    setRows((current) => current.filter((row) => row.id !== academicClass.id));
   }, []);
 
   return (
@@ -172,12 +154,12 @@ export function TeachersTable({
       atoms={{ globalFilter, pagination, sorting }}
       columns={columns}
       data={rows}
-      exportFileName="teachers"
+      exportFileName="academics"
       filters={filters}
-      getRowId={(teacher) => teacher.teacherNumber}
+      getRowId={(academic) => academic.id}
       onDelete={handleDelete}
       onEdit={handleEdit}
-      searchLabel="Search teachers"
+      searchLabel="Search classes"
     />
   );
 }

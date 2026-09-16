@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { useCallback, useEffect, useState } from "react";
 import type { Guardian } from "@/constants/guardians";
+import { capturePostHogEvent } from "@/helper/posthog";
 import { DataGrid, dataGridFeatures, type DataGridFilter } from "./DataGrid";
 
 export type GuardiansTableUrlState = {
@@ -142,6 +143,10 @@ export function GuardiansTable({
   const handleDelete = useCallback((guardian: Guardian) => {
     if (!window.confirm(`Delete ${guardian.firstName} ${guardian.lastName}?`))
       return;
+    capturePostHogEvent("guardian_deleted", {
+      entity_type: "guardian",
+      source: "data_grid",
+    });
     setRows((current) =>
       current.filter((row) => row.guardianId !== guardian.guardianId),
     );

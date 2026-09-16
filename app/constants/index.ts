@@ -19,6 +19,10 @@ export { guardians, type Guardian } from "./guardians";
 export { teachers, type Teacher } from "./teachers";
 export { staff, type Staff } from "./staff";
 export { campuses, type Campus } from "./campuses";
+export { academics, type Academic } from "./academics";
+export { classes, type AcademicClass } from "./class";
+export { subjects, type Subject } from "./subject";
+export { academicTerms, type AcademicTerm } from "./academicTerm";
 
 export const dashboardStats: StatItem[] = [
   {

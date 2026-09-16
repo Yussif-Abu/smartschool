@@ -4,6 +4,7 @@ import { useCreateAtom, useSelector } from '@tanstack/react-store'
 import { createColumnHelper, type PaginationState, type SortingState } from '@tanstack/react-table'
 import { useCallback, useEffect, useState } from 'react'
 import type { Student } from '@/constants/students'
+import { capturePostHogEvent } from '@/helper/posthog'
 import { DataGrid, dataGridFeatures, type DataGridFilter } from './DataGrid'
 
 export type StudentsTableUrlState = {
@@ -110,16 +111,16 @@ export function StudentsTable({ initialData, initialUrlState }: StudentsTablePro
     syncTableUrl(queryValue, sortingValue, paginationValue)
   }, [paginationValue, queryValue, sortingValue])
 
-  const handleCreate = useCallback(() => {
-    window.alert('Connect this action to the create-student form.')
-  }, [])
-
   const handleEdit = useCallback((student: Student) => {
     window.alert(`Edit ${student.name}`)
   }, [])
 
   const handleDelete = useCallback((student: Student) => {
     if (!window.confirm(`Delete ${student.name}?`)) return
+    capturePostHogEvent('student_deleted', {
+      entity_type: 'student',
+      source: 'data_grid',
+    })
     setRows((current) => current.filter((row) => row.id !== student.id))
   }, [])
 

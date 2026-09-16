@@ -1,13 +1,22 @@
+'use client'
+
 import Button from '@/components/Button'
 import { TextField,Select,TextArea } from '@/helper'
 import Heading from '../Heading'
 import { countries} from '@/helper/data/countries'
 import { classes } from '@/helper/data/classes'
+import { capturePostHogEvent } from '@/helper/posthog'
 
 const StudentForm = () => {
   return (
     <section className="w-full">
-      <form className="card w-full overflow-hidden">
+      <form
+        className="card w-full overflow-hidden"
+        onSubmit={() => capturePostHogEvent('student_creation_submitted', {
+          entity_type: 'student',
+          form_type: 'create',
+        })}
+      >
         <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
          <Heading title="Add Student" subtitle="Create a complete student profile and assign the learner to a campus and class." />
         </div>

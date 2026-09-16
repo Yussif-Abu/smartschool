@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { useCallback, useEffect, useState } from "react";
 import type { Staff } from "@/constants/staff";
+import { capturePostHogEvent } from "@/helper/posthog";
 import { DataGrid, dataGridFeatures, type DataGridFilter } from "./DataGrid";
 
 export type StaffTableUrlState = {
@@ -149,6 +150,10 @@ export function StaffTable({ initialData, initialUrlState }: StaffTableProps) {
       )
     )
       return;
+    capturePostHogEvent("staff_deleted", {
+      entity_type: "staff",
+      source: "data_grid",
+    });
     setRows((current) =>
       current.filter((row) => row.staffNumber !== staffMember.staffNumber),
     );

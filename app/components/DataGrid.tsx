@@ -30,6 +30,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { capturePostHogEvent } from '@/helper/posthog'
 
 /** The complete, stable capability registry shared by product data grids. */
 export const dataGridFeatures = tableFeatures({
@@ -287,6 +288,12 @@ export function DataGrid<TData extends RowData>({
   }
 
   const handleExport = (action: string) => {
+    capturePostHogEvent('table_exported', {
+      export_format: action,
+      row_count: table.getPrePaginatedRowModel().rows.length,
+      table_name: exportFileName,
+    })
+
     if (action === 'copy') void handleCopy()
     else if (action === 'excel') handleExcel()
     else if (action === 'csv') handleCsv()

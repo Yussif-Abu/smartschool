@@ -4,6 +4,7 @@ export type Guardian = {
   digitalAddress: string;
   email: string;
   emergencyContact: string;
+  employer: string;
   firstName: string;
   gender: "Male" | "Female" | "Other";
   guardianId: string;

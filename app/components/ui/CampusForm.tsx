@@ -1,11 +1,22 @@
+"use client";
+
 import Button from "@/components/Button";
 import Heading from "../Heading";
 import { Select, TextField } from "@/helper";
+import { capturePostHogEvent } from "@/helper/posthog";
 
 const CampusForm = () => {
   return (
     <section className="w-full">
-      <form className="card w-full overflow-hidden">
+      <form
+        className="card w-full overflow-hidden"
+        onSubmit={() =>
+          capturePostHogEvent("campus_creation_submitted", {
+            entity_type: "campus",
+            form_type: "create",
+          })
+        }
+      >
         <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
           <Heading
             title="Add Campus"

@@ -7,71 +7,48 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { useCallback, useEffect, useState } from "react";
-import type { Campus } from "@/constants/campuses";
+
+import type { Subject } from "@/constants/subject";
 import { capturePostHogEvent } from "@/helper/posthog";
 import { DataGrid, dataGridFeatures, type DataGridFilter } from "./DataGrid";
 
-export type CampusTableUrlState = {
+export type SubjectTableUrlState = {
   pageIndex: number;
   pageSize: number;
   query: string;
   sorting: SortingState;
 };
 
-const columnHelper = createColumnHelper<typeof dataGridFeatures, Campus>();
+const columnHelper = createColumnHelper<typeof dataGridFeatures, Subject>();
 
 const columns = columnHelper.columns([
-  columnHelper.accessor("campusName", {
-    header: "Campus",
-    sortFn: "text",
-    cell: ({ getValue, row }) => (
-      <div>
-        <p className="data-grid-primary-value">{getValue()}</p>
-        <p className="data-grid-secondary-value">{row.original.email}</p>
-      </div>
-    ),
-  }),
-  columnHelper.accessor("campusCode", {
+  columnHelper.accessor("code", {
     header: "Code",
     sortFn: "alphanumeric",
   }),
-  columnHelper.accessor("campusHead", {
-    header: "Campus Head",
+  columnHelper.accessor("subject", {
+    header: "Subject",
     sortFn: "text",
   }),
-  columnHelper.accessor("cityTown", { header: "City / Town", sortFn: "text" }),
-  columnHelper.accessor("region", { header: "Region", sortFn: "text" }),
-  columnHelper.accessor("studentCapacity", {
-    header: "Capacity",
-    sortFn: "alphanumeric",
-  }),
-  columnHelper.accessor("status", {
-    header: "Status",
+  columnHelper.accessor("department", {
+    header: "Department",
     sortFn: "text",
-    cell: ({ getValue }) => {
-      const status = getValue();
-      const color =
-        status === "Active" ? "status-badge-active" : "status-badge-inactive";
-      return <span className={`status-badge ${color}`}>{status}</span>;
-    },
   }),
 ]);
 
 const filters: DataGridFilter[] = [
   {
-    allLabel: "All statuses",
-    columnId: "status",
-    label: "Status",
+    allLabel: "All departments",
+    columnId: "department",
+    label: "Department",
     options: [
-      { label: "Active", value: "Active" },
-      { label: "Inactive", value: "Inactive" },
+      { label: "STEM", value: "STEM" },
+      { label: "Science", value: "Science" },
+      { label: "Humanities", value: "Humanities" },
+      { label: "Social Studies", value: "Social Studies" },
+      { label: "Commerce", value: "Commerce" },
+      { label: "Creative Arts", value: "Creative Arts" },
     ],
-  },
-  {
-    allLabel: "All regions",
-    columnId: "region",
-    label: "Region",
-    options: [{ label: "Greater Accra", value: "Greater Accra" }],
   },
 ];
 
@@ -84,12 +61,15 @@ function syncTableUrl(
 
   if (query) params.set("q", query);
   else params.delete("q");
+
   if (sorting[0])
     params.set("sort", `${sorting[0].id}.${sorting[0].desc ? "desc" : "asc"}`);
   else params.delete("sort");
+
   if (pagination.pageIndex)
     params.set("page", String(pagination.pageIndex + 1));
   else params.delete("page");
+
   if (pagination.pageSize !== 5)
     params.set("size", String(pagination.pageSize));
   else params.delete("size");
@@ -102,15 +82,15 @@ function syncTableUrl(
   );
 }
 
-type CampusTableProps = {
-  initialData: Campus[];
-  initialUrlState: CampusTableUrlState;
+type SubjectTableProps = {
+  initialData: Subject[];
+  initialUrlState: SubjectTableUrlState;
 };
 
-export function CampusTable({
+export function SubjectTable({
   initialData,
   initialUrlState,
-}: CampusTableProps) {
+}: SubjectTableProps) {
   const [rows, setRows] = useState(initialData);
   const globalFilter = useCreateAtom<unknown>(initialUrlState.query);
   const sorting = useCreateAtom<SortingState>(initialUrlState.sorting);
@@ -118,6 +98,7 @@ export function CampusTable({
     pageIndex: initialUrlState.pageIndex,
     pageSize: initialUrlState.pageSize,
   });
+
   const queryValue = useSelector(globalFilter, (value) => String(value ?? ""));
   const sortingValue = useSelector(sorting);
   const paginationValue = useSelector(pagination);
@@ -126,19 +107,17 @@ export function CampusTable({
     syncTableUrl(queryValue, sortingValue, paginationValue);
   }, [paginationValue, queryValue, sortingValue]);
 
-  const handleEdit = useCallback((campus: Campus) => {
-    window.alert(`Edit ${campus.campusName}`);
+  const handleEdit = useCallback((subject: Subject) => {
+    window.alert(`Edit ${subject.subject}`);
   }, []);
 
-  const handleDelete = useCallback((campus: Campus) => {
-    if (!window.confirm(`Delete ${campus.campusName}?`)) return;
-    capturePostHogEvent("campus_deleted", {
-      entity_type: "campus",
+  const handleDelete = useCallback((subject: Subject) => {
+    if (!window.confirm(`Delete ${subject.subject}?`)) return;
+    capturePostHogEvent("subject_deleted", {
+      entity_type: "subject",
       source: "data_grid",
     });
-    setRows((current) =>
-      current.filter((row) => row.campusCode !== campus.campusCode),
-    );
+    setRows((current) => current.filter((row) => row.code !== subject.code));
   }, []);
 
   return (
@@ -146,12 +125,12 @@ export function CampusTable({
       atoms={{ globalFilter, pagination, sorting }}
       columns={columns}
       data={rows}
-      exportFileName="campuses"
+      exportFileName="subjects"
       filters={filters}
-      getRowId={(campus) => campus.campusCode}
+      getRowId={(subject) => subject.code}
       onDelete={handleDelete}
       onEdit={handleEdit}
-      searchLabel="Search campuses"
+      searchLabel="Search subjects"
     />
   );
 }
